@@ -19,7 +19,7 @@ error_reporting(E_ALL);
 
 echo "🚀 Starting database migrations...\n";
 
-echo '|||';
+
 require_once "../vendor/autoload.php";
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
@@ -30,8 +30,8 @@ $dotenv->load();
 // Database configuration from environment variables
 $host = 'mysql';
 $dbname = $_ENV['MYSQL_DATABASE'];
-$username = $_ENV['MYSQL_USER'];
-$password = $_ENV['MYSQL_PASSWORD'];
+$username = 'root';//$_ENV['MYSQL_USER'];
+$password = $_ENV['MYSQL_ROOT_PASSWORD'];
 $port = getenv('DB_PORT') ?: '3306';
 
 echo "📊 Database: $dbname@$host:$port\n";
@@ -64,6 +64,60 @@ while ($attempt < $maxAttempts) {
     }
 }
 
+
+function columnExists($pdo, $tableName, $columnName) {
+    $stmt = $pdo->prepare("SELECT COUNT(*) 
+        FROM information_schema.COLUMNS 
+        WHERE TABLE_SCHEMA = DATABASE() 
+            AND TABLE_NAME = :table 
+            AND COLUMN_NAME = :column");
+
+    $stmt->execute(['table' => $tableName, 'column' => $columnName]);
+    return $stmt->fetchColumn() > 0;
+}
+
+/**
+ * Добавляет столбец если он не существует
+ */
+function addColumnIfNotExists($pdo, $tableName, $columnName, $columnDefinition) {
+    if (!columnExists($pdo, $tableName, $columnName)) {
+        $pdo->exec("ALTER TABLE `$tableName` ADD COLUMN $columnDefinition");
+        echo "✅ Added column '$columnName' to table '$tableName'\n";
+        return true;
+    }
+    echo "ℹ️ Column '$columnName' already exists in '$tableName'\n";
+    return false;
+}
+
+function indexExists($pdo, $tableName, $indexName) {
+    $stmt = $pdo->prepare("SELECT COUNT(*) 
+        FROM information_schema.STATISTICS 
+        WHERE TABLE_SCHEMA = DATABASE() 
+            AND TABLE_NAME = :table 
+            AND INDEX_NAME = :index");
+
+    $stmt->execute(['table' => $tableName, 'index' => $indexName]);
+    return $stmt->fetchColumn() > 0;
+}
+function createTableIfNotExists($pdo, $tableName) {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `{$tableName}` (
+        `Id` INT AUTO_INCREMENT PRIMARY KEY
+    ) ENGINE=InnoDB");
+}
+
+
+function addIndexIfNotExists($pdo, $tableName, $indexName, $columns, $indexType = 'INDEX') {
+    if (!indexExists($pdo, $tableName, $indexName)) {
+        $columnsList = is_array($columns) ? implode('`, `', $columns) : $columns;
+        $pdo->exec("ALTER TABLE `$tableName` ADD $indexType `$indexName` ($columnsList)");
+        echo "✅ Added $indexType '$indexName' on '$columnsList' in table '$tableName'\n";
+        return true;
+    }
+    echo "ℹ️ Index '$indexName' already exists in table '$tableName'\n";
+    return false;
+}
+
+
 try {
     // Reconnect to specific database
     $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
@@ -73,90 +127,85 @@ try {
 
     echo "📦 Creating tables...\n";
 
-    // 1. Table: users
-    $pdo->exec("CREATE TABLE IF NOT EXISTS `users` (
-        `id` INT AUTO_INCREMENT PRIMARY KEY,
-        `username` VARCHAR(50) NOT NULL UNIQUE,
-        `email` VARCHAR(100) NOT NULL UNIQUE,
-        `password` VARCHAR(255) NOT NULL,
-        `role` ENUM('user', 'admin', 'moderator') DEFAULT 'user',
-        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        INDEX `idx_email` (`email`),
-        INDEX `idx_username` (`username`)
-    ) ENGINE=InnoDB");
 
-    echo "✅ Table 'users' ready\n";
 
-    // 2. Table: products
-    $pdo->exec("CREATE TABLE IF NOT EXISTS `products` (
-        `id` INT AUTO_INCREMENT PRIMARY KEY,
-        `title` VARCHAR(255) NOT NULL,
-        `slug` VARCHAR(255) NOT NULL UNIQUE,
-        `price` DECIMAL(10,2) NOT NULL,
-        `stock_quantity` INT DEFAULT 0,
-        `is_active` TINYINT(1) DEFAULT 1,
-        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        INDEX `idx_slug` (`slug`)
-    ) ENGINE=InnoDB");
+  $tabels = [
+      "wbSettings"  => [
+          "columns" => [
+              "Id" => "INT AUTO_INCREMENT PRIMARY KEY",
+              "name" => "`name` VARCHAR(15) NULL ",
+              "accessToken" => "`accessToken` TEXT NULL ",
+              "proxy" => "`proxy` VARCHAR(255) NULL ",
+              "warehouse_id" => "`warehouse_id` VARCHAR(15) NULL ",
+              "active" => "`active` TINYINT(1) NULL ",
+          ],
+          "indexes" => [
+              "all" => " `Id`,`name`,`proxy`,`warehouse_id` ",
+          ]
+      ],
 
-    echo "✅ Table 'products' ready\n";
 
-    // 3. Table: categories
-    $pdo->exec("CREATE TABLE IF NOT EXISTS `categories` (
-        `id` INT AUTO_INCREMENT PRIMARY KEY,
-        `name` VARCHAR(100) NOT NULL,
-        `slug` VARCHAR(100) NOT NULL UNIQUE,
-        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        INDEX `idx_slug` (`slug`)
-    ) ENGINE=InnoDB");
+    "users"  => [
+        "columns" => [
+            "Id" => "INT AUTO_INCREMENT PRIMARY KEY",
+            "email" => "`email` VARCHAR(100) NULL AFTER `Id`",
+            "pass" => "`pass` VARCHAR(100) NULL AFTER `email`",
+            "role" => "`role` VARCHAR(15) NULL AFTER `pass`",
+        ],
+        "indexes" => [
+            "email" => " `email`,`role` ",
+        ]
+    ],
 
-    echo "✅ Table 'categories' ready\n";
+      "products"  => [
+          "columns" => [
+              "Id" => "INT AUTO_INCREMENT PRIMARY KEY",
+              "mainId" => "`mainId` VARCHAR(100) NULL ",
+              "vendorCode" => "`vendorCode` VARCHAR(100) NULL ",
+              "nomTtype" => "`nomTtype` VARCHAR(20) NULL ",
+              "url" => "`url` VARCHAR(255) NULL ",
+              "specifications" => "`specifications` JSON NULL ",
+              "nm_id" => "`nm_id` INT NULL ",
+              "imt_id" => "`imt_id` INT NULL ",
+              "chrt_id" => "`chrt_id` INT NULL ",
+              "barcode" => "`barcode` VARCHAR(255) NULL ",
+              "stocks" => "`stocks` INT NULL ",
+              "lastUpdateStocks" => "`lastUpdateStocks` DATETIME NULL ",
+              "price" => "`price` DECIMAL(12,2) NULL ",
+              "discount" => "`discount` INT NULL ",
+              "createdAt" => "`createdAt` DATETIME NULL ",
+              "updatedAt" => "`updatedAt` DATETIME NULL ",
+          ],
+          "indexes" => [
+              "mainId" => " `mainId` ",
+              "specifications" => " `vendorCode`, `mainId`, `nomTtype` ",
+              //"all" => " `all` ",
+          ]
+      ],
 
-    // 4. Add category_id to products if not exists
-    $columnExists = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS 
-        WHERE TABLE_SCHEMA = '$dbname' 
-        AND TABLE_NAME = 'products' 
-        AND COLUMN_NAME = 'category_id'")->fetchColumn();
 
-    if ($columnExists == 0) {
-        $pdo->exec("ALTER TABLE `products` ADD COLUMN `category_id` INT NULL AFTER `slug`");
-        $pdo->exec("ALTER TABLE `products` ADD CONSTRAINT `fk_products_category` 
-            FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON DELETE SET NULL");
-        echo "✅ Added 'category_id' to products\n";
+
+     // ""  => [],
+     // ""  => [],
+  ];
+
+
+    foreach ($tabels as $table => $props) {
+
+        createTableIfNotExists($pdo, $table);
+
+        foreach($props['columns'] as $column => $columnDefinition) {
+
+            addColumnIfNotExists($pdo, $table, $column, $columnDefinition);
+        }
+
+        foreach($props['indexes'] as $indexName => $indexDefinition) {
+            addIndexIfNotExists($pdo, $table, $indexName, $indexDefinition);
+        }
+
+
     }
-
-    // 5. Insert sample data if tables are empty
-    $usersCount = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
-    if ($usersCount == 0) {
-        $pdo->exec("INSERT INTO `users` (username, email, password, role) VALUES
-            ('admin', 'admin@example.com', '" . password_hash('admin123', PASSWORD_DEFAULT) . "', 'admin'),
-            ('user1', 'user1@example.com', '" . password_hash('user123', PASSWORD_DEFAULT) . "', 'user')");
-        echo "✅ Added sample users\n";
-    }
-
-    $categoriesCount = $pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn();
-    if ($categoriesCount == 0) {
-        $pdo->exec("INSERT INTO `categories` (name, slug) VALUES
-            ('Electronics', 'electronics'),
-            ('Clothing', 'clothing'),
-            ('Books', 'books')");
-        echo "✅ Added sample categories\n";
-    }
-
-    $productsCount = $pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
-    if ($productsCount == 0) {
-        $pdo->exec("INSERT INTO `products` (title, slug, price, category_id, stock_quantity) VALUES
-            ('Laptop', 'laptop', 999.99, 1, 10),
-            ('T-Shirt', 't-shirt', 19.99, 2, 50),
-            ('Programming Book', 'programming-book', 39.99, 3, 25)");
-        echo "✅ Added sample products\n";
-    }
-
-    echo "🎉 Database migrations completed successfully!\n";
-    echo "📊 Tables created: users, products, categories\n";
-    echo "📊 Sample data inserted\n";
+    echo "✅ Migration successfully\n";
 
 } catch (PDOException $e) {
     echo "❌ Migration error: " . $e->getMessage() . "\n";

@@ -148,14 +148,24 @@ try {
     "users"  => [
         "columns" => [
             "Id" => "INT AUTO_INCREMENT PRIMARY KEY",
-            "email" => "`email` VARCHAR(100) NULL AFTER `Id`",
-            "pass" => "`pass` VARCHAR(100) NULL AFTER `email`",
-            "role" => "`role` VARCHAR(15) NULL AFTER `pass`",
+            "username" => "`username` VARCHAR(100) NULL AFTER `Id`",
+            "password" => "`password` VARCHAR(255) NULL ",
+            "role" => "`role` VARCHAR(15) DEFAULT 'user'",
+            "created_at" => "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
         ],
         "indexes" => [
-            "email" => " `email`,`role` ",
+            "username" => " `username`,`role` ",
         ]
     ],
+
+/*
+ * -- Пример пользователя (пароль: admin123)
+INSERT INTO users (username, password, role) VALUES
+('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin'),
+('manager', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'manager'),
+('user', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user');
+ * */
+
 
       "products"  => [
           "columns" => [

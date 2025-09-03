@@ -115,7 +115,6 @@ $app->group('/api', function ($group) {
         $response->getBody()->write(json_encode([
             'message' => 'Data received successfully',
             'received_data' => $jsonData,
-            'raw_body' => $rawBody
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         return $response->withHeader('Content-Type', 'application/json');

@@ -14,6 +14,7 @@ use Slim\Factory\AppFactory;
 use App\Middleware\JwtMiddleware;
 use App\Middleware\RoleMiddleware;
 use App\Controllers\AuthController;
+use Slim\Middleware\BodyParsingMiddleware;
 
 $container = new Container();
 
@@ -48,6 +49,8 @@ $container->set(AuthController::class, function (Container $container) {
 
 AppFactory::setContainer($container);
 $app = AppFactory::create();
+
+$app->addBodyParsingMiddleware();
 
 // Middleware для обработки CORS
 $app->add(function (Request $request, $handler): Response {
@@ -87,8 +90,9 @@ $app->group('/api', function ($group) {
 
     // Маршрут для всех аутентифицированных пользователей
     $group->get('/profile', function (Request $request, Response $response) {
+        $resp = $request->getParsedBody();
         $user = $request->getAttribute('user');
-        $response->getBody()->write(json_encode(['user' => $user]));
+        $response->getBody()->write(json_encode(['resp'=>$resp,'user' => $user]));
         return $response->withHeader('Content-Type', 'application/json');
     });
 
@@ -103,6 +107,20 @@ $app->group('/api', function ($group) {
         $response->getBody()->write(json_encode(['message' => 'Management area']));
         return $response->withHeader('Content-Type', 'application/json');
     })->add(new RoleMiddleware(['admin', 'manager']));
+
+    $group->post('/demoData', function (Request $request, Response $response) {
+        $jsonData = $request->getParsedBody();
+
+        // Возвращаем полученные данные
+        $response->getBody()->write(json_encode([
+            'message' => 'Data received successfully',
+            'received_data' => $jsonData,
+            'raw_body' => $rawBody
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+        return $response->withHeader('Content-Type', 'application/json');
+    })->add(new RoleMiddleware(['admin']));
+
 
 })->add(new JwtMiddleware($container->get('jwt_secret')));
 

@@ -109,6 +109,8 @@ function createTableIfNotExists($pdo, $tableName) {
 function addIndexIfNotExists($pdo, $tableName, $indexName, $columns, $indexType = 'INDEX') {
     if (!indexExists($pdo, $tableName, $indexName)) {
         $columnsList = is_array($columns) ? implode('`, `', $columns) : $columns;
+        //echo "ALTER TABLE `$tableName` ADD $indexType `$indexName` ($columnsList)".PHP_EOL;
+
         $pdo->exec("ALTER TABLE `$tableName` ADD $indexType `$indexName` ($columnsList)");
         echo "✅ Added $indexType '$indexName' on '$columnsList' in table '$tableName'\n";
         return true;
@@ -152,9 +154,11 @@ try {
             "password" => "`password` VARCHAR(255) NULL ",
             "role" => "`role` VARCHAR(15) DEFAULT 'user'",
             "created_at" => "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            "updated_at" => "`updated_at` DATETIME NULL ",
         ],
         "indexes" => [
             "username" => " `username`,`role` ",
+            "original"=>"  `original` (`username`)"
         ]
     ],
 
@@ -210,8 +214,46 @@ INSERT INTO users (username, password, role) VALUES
         }
 
         foreach($props['indexes'] as $indexName => $indexDefinition) {
-            addIndexIfNotExists($pdo, $table, $indexName, $indexDefinition);
+            $idexType = "INDEX";
+            //echo $table." - ".$indexName.PHP_EOL;
+            if(strpos($indexName,"original")>-1){$idexType = "UNIQUE INDEX";}
+            addIndexIfNotExists($pdo, $table, $indexName, $indexDefinition,$idexType);
         }
+
+        $username = 'admin';
+        $password = password_hash('admin123', PASSWORD_DEFAULT);
+        $role = 'admin';
+
+        $stmt = $pdo->prepare("
+        INSERT INTO users (username, password, role) 
+        VALUES (:username, :password, :role)
+        ON DUPLICATE KEY UPDATE 
+            password = VALUES(password),
+            role = VALUES(role),
+            updated_at = CURRENT_TIMESTAMP
+    ");
+
+        $stmt->execute([
+            ':username' => $username,
+            ':password' => $password,
+            ':role' => $role
+        ]);
+
+        echo "User {$username} created or updated successfully".PHP_EOL;
+
+        $username = 'apiUser';
+        $password = password_hash('ParalaXXX', PASSWORD_DEFAULT);
+        $role = 'admin';
+
+        $stmt->execute([
+            ':username' => $username,
+            ':password' => $password,
+            ':role' => $role
+        ]);
+
+
+        echo "User {$username} created or updated successfully".PHP_EOL;
+
 
 
     }

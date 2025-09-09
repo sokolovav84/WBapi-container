@@ -7,6 +7,8 @@ require_once "vendor/autoload.php";
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
+use App\Controllers\WildberriesController;
+use App\Services\WildberriesService;
 use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -15,6 +17,7 @@ use App\Middleware\JwtMiddleware;
 use App\Middleware\RoleMiddleware;
 use App\Controllers\AuthController;
 use Slim\Middleware\BodyParsingMiddleware;
+
 
 $container = new Container();
 
@@ -32,6 +35,19 @@ $container->set('db', function () {
     } catch (\PDOException $e) {
         throw new \PDOException($e->getMessage(), (int)$e->getCode());
     }
+});
+
+
+// Регистрация WildberriesService
+$container->set(WildberriesService::class, function (Container $container) {
+    return new WildberriesService($container->get('db'));
+});
+
+// Регистрация WildberriesController
+$container->set(WildberriesController::class, function (Container $container) {
+    return new WildberriesController(
+        $container->get(WildberriesService::class)
+    );
 });
 
 // JWT секретный ключ
@@ -119,6 +135,20 @@ $app->group('/api', function ($group) {
 
         return $response->withHeader('Content-Type', 'application/json');
     })->add(new RoleMiddleware(['admin']));
+
+
+
+
+    // Wildberries маршруты (доступны всем аутентифицированным)
+    $group->get('/wb/products', [WildberriesController::class, 'getProducts']);
+    $group->get('/wb/stocks', [WildberriesController::class, 'getStocks']);
+    $group->get('/wb/orders', [WildberriesController::class, 'getOrders']);
+
+    // Настройки Wildberries (только для админов)
+    $group->get('/wb/settings', [WildberriesController::class, 'getSettings'])->add(new RoleMiddleware(['admin']));
+    $group->post('/wb/settings', [WildberriesController::class, 'updateSettings'])->add(new RoleMiddleware(['admin']));
+
+
 
 
 })->add(new JwtMiddleware($container->get('jwt_secret')));

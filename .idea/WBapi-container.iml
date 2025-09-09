@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/app/" isTestSource="false" packagePrefix="App\" />
       <sourceFolder url="file://$MODULE_DIR$/app/Controllers" isTestSource="false" packagePrefix="App\Controllers\" />
       <sourceFolder url="file://$MODULE_DIR$/app/Middleware" isTestSource="false" packagePrefix="App\Middleware\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/Services" isTestSource="false" packagePrefix="App\Services\" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/composer" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/instantiator" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/fig/http-message-util" />

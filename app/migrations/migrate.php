@@ -153,12 +153,12 @@ try {
             "username" => "`username` VARCHAR(100) NULL AFTER `Id`",
             "password" => "`password` VARCHAR(255) NULL ",
             "role" => "`role` VARCHAR(15) DEFAULT 'user'",
-            "created_at" => "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-            "updated_at" => "`updated_at` DATETIME NULL ",
+            "created_at" => " created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            "updated_at" => " `updated_at` DATETIME NULL ",
         ],
         "indexes" => [
             "username" => " `username`,`role` ",
-            "original"=>"  `original` (`username`)"
+            "original"=>"  `username`"
         ]
     ],
 
@@ -206,6 +206,7 @@ INSERT INTO users (username, password, role) VALUES
 
     foreach ($tabels as $table => $props) {
 
+        echo "====================={$table}=============================".PHP_EOL;
         createTableIfNotExists($pdo, $table);
 
         foreach($props['columns'] as $column => $columnDefinition) {
@@ -215,16 +216,20 @@ INSERT INTO users (username, password, role) VALUES
 
         foreach($props['indexes'] as $indexName => $indexDefinition) {
             $idexType = "INDEX";
-            //echo $table." - ".$indexName.PHP_EOL;
+            echo $table." - ".$indexName.PHP_EOL;
             if(strpos($indexName,"original")>-1){$idexType = "UNIQUE INDEX";}
             addIndexIfNotExists($pdo, $table, $indexName, $indexDefinition,$idexType);
         }
 
-        $username = 'admin';
-        $password = password_hash('admin123', PASSWORD_DEFAULT);
-        $role = 'admin';
+    }
+    echo "✅ Migration successfully\n";
 
-        $stmt = $pdo->prepare("
+
+    $username = 'admin';
+    $password = password_hash('admin123', PASSWORD_DEFAULT);
+    $role = 'admin';
+
+    $stmt = $pdo->prepare("
         INSERT INTO users (username, password, role) 
         VALUES (:username, :password, :role)
         ON DUPLICATE KEY UPDATE 
@@ -233,33 +238,33 @@ INSERT INTO users (username, password, role) VALUES
             updated_at = CURRENT_TIMESTAMP
     ");
 
-        $stmt->execute([
-            ':username' => $username,
-            ':password' => $password,
-            ':role' => $role
-        ]);
+    $stmt->execute([
+        ':username' => $username,
+        ':password' => $password,
+        ':role' => $role
+    ]);
 
-        echo "User {$username} created or updated successfully".PHP_EOL;
+    echo "User {$username} created or updated successfully".PHP_EOL;
 
-        $username = 'apiUser';
-        $password = password_hash('ParalaXXX', PASSWORD_DEFAULT);
-        $role = 'admin';
+    $username = 'apiUser';
+    $password = password_hash('ParalaXXX', PASSWORD_DEFAULT);
+    $role = 'admin';
 
-        $stmt->execute([
-            ':username' => $username,
-            ':password' => $password,
-            ':role' => $role
-        ]);
-
-
-        echo "User {$username} created or updated successfully".PHP_EOL;
+    $stmt->execute([
+        ':username' => $username,
+        ':password' => $password,
+        ':role' => $role
+    ]);
 
 
+    echo "User {$username} created or updated successfully".PHP_EOL;
 
-    }
-    echo "✅ Migration successfully\n";
+
+
+
 
 } catch (PDOException $e) {
+    //print_r($e);
     echo "❌ Migration error: " . $e->getMessage() . "\n";
     exit(1);
 }

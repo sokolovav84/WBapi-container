@@ -27,7 +27,8 @@
             "Dakword\\WBSeller\\": "src/",
             "App\\": "/",
             "App\\Middleware\\": "Middleware/",
-            "App\\Controllers\\": "Controllers/"
+            "App\\Controllers\\": "Controllers/",
+            "App\\Services\\": "Services/"
         }
     },
     "autoload-dev": {

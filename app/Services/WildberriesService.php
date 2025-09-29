@@ -299,72 +299,8 @@ class WildberriesService
         ];
     }
 
-    /**
-     * Создание плейсхолдера для подготовленного запроса
-     */
-    private function createPlaceholder(): string
-    {
-        return '(?, ?, ?, ?, ?, ?)';
-    }
-
-    /**
-     * Выполнение пакетной вставки с ON DUPLICATE KEY UPDATE
-     */
-    private function executeBatchInsert(array $placeholders, array $values): array
-    {
-        $sql = "
-        INSERT INTO products (
-            mainId, vendorCode, specificationsWB, 
-            nm_id, imt_id, chrt_id
-        ) VALUES " . implode(', ', $placeholders) . "
-        ON DUPLICATE KEY UPDATE 
-            mainId = VALUES(mainId),
-            vendorCode = VALUES(vendorCode),
-            specificationsWB = VALUES(specificationsWB),
-            imt_id = VALUES(imt_id),
-            chrt_id = VALUES(chrt_id),
-            updatedAt = NOW()
-    ";
 
 
-
-        $stmt = $this->db->prepare($sql);
-
-        // Добавляем даты создания/обновления для каждого значения
-        $finalValues = [];
-        foreach ($values as $i => $value) {
-            $finalValues[] = $value;
-            // Добавляем createdAt и updatedAt после каждых 13 значений (количество полей)
-            if (($i + 1) % 6 === 0) {
-                $finalValues[] = date('Y-m-d H:i:s'); // createdAt
-                $finalValues[] = date('Y-m-d H:i:s'); // updatedAt
-            }
-        }
-
-        $stmt->execute($finalValues);
-
-        // Получаем статистику вставки/обновления
-        $rowCount = $stmt->rowCount();
-        $imported = 0;
-        $updated = 0;
-
-        // В MySQL, при ON DUPLICATE KEY UPDATE:
-        // - 1 для вставленной строки
-        // - 2 для обновленной строки
-        // Но для пакетной вставки это не так просто, поэтому используем альтернативный подход
-
-        // Альтернативный способ: считаем по количеству affected rows
-        if ($rowCount > 0) {
-            // Это приблизительная оценка, так как MySQL не дает точной статистики для batch операций
-            $imported = count($placeholders); // Предполагаем, что все вставлены
-            $updated = $rowCount - count($placeholders); // Разница может указывать на обновления
-        }
-
-        return [
-            'imported' => max(0, $imported),
-            'updated' => max(0, $updated)
-        ];
-    }
 /**=======================================================================*/
     /**
      * Альтернативный метод: обработка по одному товару с ON DUPLICATE KEY UPDATE

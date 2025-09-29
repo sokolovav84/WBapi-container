@@ -73,6 +73,38 @@ services:
     networks:
       - iex
 
+  # Redis Service
+  redis:
+    container_name: ${PROJECT_NAME}_redis
+    image: redis:7.2
+    restart: unless-stopped
+    ports:
+      - "${REDIS_EXTERNAL_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - iex
+
+  # RabbitMQ Service
+  rabbitmq:
+    container_name: ${PROJECT_NAME}_rabbitmq
+    image: rabbitmq:3.12-management
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USERNAME}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    ports:
+      - "${RABBITMQ_EXTERNAL_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - iex
+
 volumes:
   mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+  rabbitmq_data:
     driver: local

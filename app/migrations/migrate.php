@@ -179,6 +179,7 @@ INSERT INTO users (username, password, role) VALUES
               "nomTtype" => "`nomTtype` VARCHAR(20) NULL ",
               "url" => "`url` VARCHAR(255) NULL ",
               "specifications" => "`specifications` JSON NULL ",
+              "specificationsWB" => "`specificationsWB` JSON NULL ",
               "nm_id" => "`nm_id` INT NULL ",
               "imt_id" => "`imt_id` INT NULL ",
               "chrt_id" => "`chrt_id` INT NULL ",
@@ -193,6 +194,8 @@ INSERT INTO users (username, password, role) VALUES
           "indexes" => [
               "mainId" => " `mainId` ",
               "specifications" => " `vendorCode`, `mainId`, `nomTtype` ",
+              "original"=>"  `nm_id`",
+              "originalVC"=>"  `vendorCode`"
               //"all" => " `all` ",
           ]
       ],

@@ -2,6 +2,9 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+ini_set("max_execution_time", 10000);
+set_time_limit(10000);
+
 require_once "vendor/autoload.php";
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -20,6 +23,9 @@ use Slim\Middleware\BodyParsingMiddleware;
 
 
 $container = new Container();
+
+
+
 
 // Правильная настройка базы данных
 $container->set('db', function () {
@@ -147,6 +153,8 @@ $app->group('/api', function ($group) {
     // Настройки Wildberries (только для админов)
     $group->get('/wb/settings', [WildberriesController::class, 'getSettings'])->add(new RoleMiddleware(['admin']));
     $group->post('/wb/settings', [WildberriesController::class, 'updateSettings'])->add(new RoleMiddleware(['admin']));
+
+    $group->post('/wb/import-products', [WildberriesController::class, 'importProducts'])->add(new RoleMiddleware(['admin']));
 
 
 

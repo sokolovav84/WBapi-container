@@ -4,12 +4,15 @@
 namespace App\Services;
 
 use GuzzleHttp\Client;
+use Dakword\WBSeller;
 use GuzzleHttp\Exception\RequestException;
 use PDO;
+use Exception;
 
 class WildberriesService
 {
     private $client;
+    private $wbApi;
     private $db;
     private $baseUrl = 'https://content-api.wildberries.ru';
 
@@ -29,6 +32,8 @@ class WildberriesService
                 CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
             ]
         ]);
+
+        $this->wbApi = new WBSeller\API(["keys"=>["content"=>$this->getApiKey()]]);
     }
 
     /**
@@ -121,6 +126,341 @@ class WildberriesService
             ]
         ], $proxyOptions);
     }
+
+
+    /**
+     * Импорт товаров из WB в базу данных с использованием ON DUPLICATE KEY UPDATE
+     */
+    public function importProductsToDatabase(int $batchSize = 100): array
+    {
+        try {
+            $imported = 0;
+            $updated = 0;
+            $errors = 0;
+            $offset = 0;
+
+            $updatedAt = '';
+            $nmId = 0;
+            $ascending = false;
+            $withPhoto = -1;
+            $objectIDs = [];
+            $brands = [];
+            $tagIDs = [];
+            $imtID = 0;
+            $allowedCategoriesOnly = false;
+
+
+            do {
+                // Получаем товары через WBSeller API
+                $contentAPI = $this->wbApi->Content();
+                $products = $contentAPI->getCardsList('',
+                    $batchSize,
+                    $updatedAt,
+                    $nmId,
+                    $ascending,
+                    $withPhoto,
+                    $objectIDs,
+                    $brands,
+                    $tagIDs,
+                    $imtID,
+                    $allowedCategoriesOnly
+                );
+
+
+                print_r($products->cursor);echo PHP_EOL;
+
+                if (empty($products)) {
+                    break;
+                }
+                $updatedAt = $products->cursor->updatedAt ?? '';
+                $nmId      = $products->cursor->nmID ?? 0;
+                // Обрабатываем партией для эффективности
+                $batchResult = $this->processProductsBatch($products->cards);
+                $imported += $batchResult['imported'];
+                $updated += $batchResult['updated'];
+                $errors += $batchResult['errors'];
+
+                $offset += $batchSize;
+
+                // Пауза чтобы не превысить лимиты API
+                usleep(500000); // 0.5 секунды
+
+            } while (!empty($products));
+
+            return [
+                'success' => true,
+                'total' => $imported + $updated
+            ];
+
+        } catch (Exception $e) {
+            error_log("Import failed: " . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+                'imported' => 0,
+                'updated' => 0,
+                'errors' => $errors ?? 0
+            ];
+        }
+    }
+
+    /**
+     * Обработка партии товаров одним запросом
+     */
+    private function processProductsBatch(array $products): array
+    {
+        $imported = 0;
+        $updated = 0;
+        $errors = 0;
+
+        if (empty($products)) {
+            return compact('imported', 'updated', 'errors');
+            die('products is empty');
+        }
+
+
+        $sql = "INSERT INTO products ( mainId, vendorCode, specificationsWB, nm_id, imt_id, chrt_id, createdAt ) VALUES (:mainId, :vendorCode, :specificationsWB, :nm_id, :imt_id, :chrt_id, NOW())
+                    ON DUPLICATE KEY UPDATE 
+                    mainId = VALUES(mainId),
+                    vendorCode = VALUES(vendorCode),
+                    specificationsWB = VALUES(specificationsWB),
+                    imt_id = VALUES(imt_id),
+                    chrt_id = VALUES(chrt_id),
+                    updatedAt = NOW()";
+
+        $stmt = $this->db->prepare($sql);
+
+        try {
+            foreach ($products as $product) {
+                try {
+
+
+                    $productData = $this->prepareProductData((array)$product);
+
+                    //var_dump($productData);
+
+                    if($productData) {
+                        $stmt->execute([
+                            ':mainId'         => $productData[':mainId'],
+                            ':vendorCode'     => $productData[':vendorCode'],
+                            ':specificationsWB' => $productData[':specificationsWB'], // строка JSON
+                            ':nm_id'          => $productData[':nm_id'],
+                            ':imt_id'         => $productData[':imt_id'],
+                            ':chrt_id'        => $productData[':chrt_id'],
+                        ]);
+
+
+                    }
+                } catch (Exception $e) {
+                    $errors++;
+                    error_log("Error preparing product data: " . $e->getMessage());
+                }
+
+
+
+            }
+
+
+            //$this->db->commit();
+
+        } catch (Exception $e) {
+            //$this->db->rollBack();
+            $errors += count($products); // Все товары в партии считаем ошибками
+            error_log("Batch processing failed: " . $e->getMessage());
+        }
+
+        return compact('imported', 'updated', 'errors');
+    }
+
+    /**
+     * Подготовка данных товара для вставки
+     */
+    private function prepareProductData(array $product): ?array
+    {
+        $nm_id = $product['nmID'] ?? null;
+        if (!$nm_id) {
+            throw new Exception('nm_id is required');
+        }
+
+        return [
+            ':mainId' => $product['id'] ?? $product['imtID'] ?? null,
+            ':vendorCode' => $product['vendorCode'] ?? null,
+            //'nomTtype' => $product['nomenclatureType'] ?? null,
+            //'url' => $this->extractProductUrl($product),
+            ':specificationsWB' => json_encode($product ?? []),
+            ':nm_id' => $nm_id,
+            ':imt_id' => $product['imtID'] ?? null,
+            ':chrt_id' => $product['chrtID'] ?? $product['variations'][0]['chrtID'] ?? null,
+            //'barcode' => $this->extractBarcode($product),
+            //'stocks' => $this->extractStocks($product),
+            //'lastUpdateStocks' => $this->extractLastUpdateDate($product),
+            //'price' => $this->extractPrice($product),
+            //'discount' => $this->extractDiscount($product),
+        ];
+    }
+
+    /**
+     * Создание плейсхолдера для подготовленного запроса
+     */
+    private function createPlaceholder(): string
+    {
+        return '(?, ?, ?, ?, ?, ?)';
+    }
+
+    /**
+     * Выполнение пакетной вставки с ON DUPLICATE KEY UPDATE
+     */
+    private function executeBatchInsert(array $placeholders, array $values): array
+    {
+        $sql = "
+        INSERT INTO products (
+            mainId, vendorCode, specificationsWB, 
+            nm_id, imt_id, chrt_id
+        ) VALUES " . implode(', ', $placeholders) . "
+        ON DUPLICATE KEY UPDATE 
+            mainId = VALUES(mainId),
+            vendorCode = VALUES(vendorCode),
+            specificationsWB = VALUES(specificationsWB),
+            imt_id = VALUES(imt_id),
+            chrt_id = VALUES(chrt_id),
+            updatedAt = NOW()
+    ";
+
+
+
+        $stmt = $this->db->prepare($sql);
+
+        // Добавляем даты создания/обновления для каждого значения
+        $finalValues = [];
+        foreach ($values as $i => $value) {
+            $finalValues[] = $value;
+            // Добавляем createdAt и updatedAt после каждых 13 значений (количество полей)
+            if (($i + 1) % 6 === 0) {
+                $finalValues[] = date('Y-m-d H:i:s'); // createdAt
+                $finalValues[] = date('Y-m-d H:i:s'); // updatedAt
+            }
+        }
+
+        $stmt->execute($finalValues);
+
+        // Получаем статистику вставки/обновления
+        $rowCount = $stmt->rowCount();
+        $imported = 0;
+        $updated = 0;
+
+        // В MySQL, при ON DUPLICATE KEY UPDATE:
+        // - 1 для вставленной строки
+        // - 2 для обновленной строки
+        // Но для пакетной вставки это не так просто, поэтому используем альтернативный подход
+
+        // Альтернативный способ: считаем по количеству affected rows
+        if ($rowCount > 0) {
+            // Это приблизительная оценка, так как MySQL не дает точной статистики для batch операций
+            $imported = count($placeholders); // Предполагаем, что все вставлены
+            $updated = $rowCount - count($placeholders); // Разница может указывать на обновления
+        }
+
+        return [
+            'imported' => max(0, $imported),
+            'updated' => max(0, $updated)
+        ];
+    }
+/**=======================================================================*/
+    /**
+     * Альтернативный метод: обработка по одному товару с ON DUPLICATE KEY UPDATE
+     * (Менее эффективно, но проще для отслеживания статистики)
+     */
+    public function importProductsSingle(int $batchSize = 100): array
+    {
+        try {
+            $imported = 0;
+            $updated = 0;
+            $errors = 0;
+            $offset = 0;
+
+            do {
+                $contentAPI = $this->wbApi->Content();
+                $products = $contentAPI->getCardsList($offset, $batchSize);
+
+                if (empty($products)) {
+                    break;
+                }
+
+                foreach ($products as $product) {
+                    try {
+                        $result = $this->processSingleProduct($product);
+                        if ($result === 'imported') {
+                            $imported++;
+                        } elseif ($result === 'updated') {
+                            $updated++;
+                        }
+                    } catch (Exception $e) {
+                        $errors++;
+                        error_log("Error processing product: " . $e->getMessage());
+                    }
+                }
+
+                $offset += $batchSize;
+                usleep(500000);
+
+            } while (!empty($products));
+
+            return [
+                'success' => true,
+                'imported' => $imported,
+                'updated' => $updated,
+                'errors' => $errors,
+                'total' => $imported + $updated
+            ];
+
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+                'imported' => 0,
+                'updated' => 0,
+                'errors' => $errors ?? 0
+            ];
+        }
+    }
+
+    /**
+     * Обработка одного товара с ON DUPLICATE KEY UPDATE
+     */
+    private function processSingleProduct(array $product): string
+    {
+        $nm_id = $product['nmID'] ?? null;
+        if (!$nm_id) {
+            throw new Exception('nm_id is required');
+        }
+
+        $sql = "
+        INSERT INTO products (
+            mainId, vendorCode, specificationsWB, 
+            nm_id, imt_id, chrt_id, updatedAt
+        ) VALUES (
+            :mainId, :vendorCode, :specificationsWB,
+            :nm_id, :imt_id, :chrt_id,  NOW()
+        )
+        ON DUPLICATE KEY UPDATE 
+            mainId = VALUES(mainId),
+            vendorCode = VALUES(vendorCode),
+            specificationsWB = VALUES(specificationsWB),
+            imt_id = VALUES(imt_id),
+            chrt_id = VALUES(chrt_id),
+            updatedAt = NOW()
+    ";
+
+        $stmt = $this->db->prepare($sql);
+        $this->bindProductData($stmt, $product);
+
+        $stmt->execute();
+
+        // Определяем тип операции по rowCount
+        return $stmt->rowCount() === 1 ? 'imported' : 'updated';
+    }
+
+
 
     /**
      * Получить список остатков товаров

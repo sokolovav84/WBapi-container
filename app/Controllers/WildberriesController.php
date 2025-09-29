@@ -131,4 +131,49 @@ class WildberriesController
 
         return $response->withHeader('Content-Type', 'application/json');
     }
+
+    public function importProducts(Request $request, Response $response): Response
+    {
+        $queryParams = $request->getQueryParams();
+        $batchSize = $queryParams['batchSize'] ?? 100;
+        $method = $queryParams['method'] ?? 'batch'; // batch или single
+
+        try {
+            if ($method === 'single') {
+                $result = $this->wbService->importProductsSingle((int)$batchSize);
+            } else {
+                $result = $this->wbService->importProductsToDatabase((int)$batchSize);
+            }
+
+            $response->getBody()->write(json_encode([
+                'success' => $result['success'],
+                'imported' => $result['imported'] ?? 0,
+                'updated' => $result['updated'] ?? 0,
+                'errors' => $result['errors'] ?? 0,
+                'total' => $result['total'] ?? 0,
+                'method' => $method,
+                'message' => $result['success'] ?
+                    "Successfully imported {$result['imported']} new products and updated {$result['updated']} existing products" :
+                    "Import failed: {$result['error']}"
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (Exception $e) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'imported' => 0,
+                'updated' => 0,
+                'errors' => 0,
+                'total' => 0
+            ]));
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+
+
+
+
 }

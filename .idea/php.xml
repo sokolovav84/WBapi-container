@@ -68,6 +68,10 @@
       <path value="$PROJECT_DIR$/app/vendor/phar-io/version" />
       <path value="$PROJECT_DIR$/app/vendor/doctrine/instantiator" />
       <path value="$PROJECT_DIR$/app/vendor/vlucas/phpdotenv" />
+      <path value="$PROJECT_DIR$/app/vendor/paragonie/constant_time_encoding" />
+      <path value="$PROJECT_DIR$/app/vendor/paragonie/random_compat" />
+      <path value="$PROJECT_DIR$/app/vendor/phpseclib/phpseclib" />
+      <path value="$PROJECT_DIR$/app/vendor/php-amqplib/php-amqplib" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />

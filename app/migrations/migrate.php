@@ -139,6 +139,8 @@ try {
               "accessToken" => "`accessToken` TEXT NULL ",
               "proxy" => "`proxy` VARCHAR(255) NULL ",
               "warehouse_id" => "`warehouse_id` VARCHAR(15) NULL ",
+              "siteUrl" => "`siteUrl` VARCHAR(255) NULL ",
+              "siteToken" => "`siteToken` VARCHAR(255) NULL ",
               "active" => "`active` TINYINT(1) NULL ",
           ],
           "indexes" => [

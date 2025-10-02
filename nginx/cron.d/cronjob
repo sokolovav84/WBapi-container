@@ -1,0 +1,1 @@
+*/5 * * * * root /usr/bin/php /var/www/html/cli/sync_site_products.php >> /var/log/cron.log 2>&1

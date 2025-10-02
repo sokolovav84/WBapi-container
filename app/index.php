@@ -10,6 +10,8 @@ require_once "vendor/autoload.php";
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
+use App\Controllers\SiteController;
+use App\Services\SiteService;
 use App\Controllers\WildberriesController;
 use App\Services\WildberriesService;
 use DI\Container;
@@ -53,6 +55,18 @@ $container->set(WildberriesService::class, function (Container $container) {
 $container->set(WildberriesController::class, function (Container $container) {
     return new WildberriesController(
         $container->get(WildberriesService::class)
+    );
+});
+
+
+// Регистрация SiteService
+$container->set(SiteService::class, function (Container $container) {
+    return new SiteService($container->get('db'));
+});
+// Регистрация SiteController
+$container->set(SiteController::class, function (Container $container) {
+    return new SiteController(
+        $container->get(SiteService::class)
     );
 });
 
@@ -149,6 +163,9 @@ $app->group('/api', function ($group) {
     $group->get('/wb/products', [WildberriesController::class, 'getProducts']);
     $group->get('/wb/stocks', [WildberriesController::class, 'getStocks']);
     $group->get('/wb/orders', [WildberriesController::class, 'getOrders']);
+
+    $group->get('/site/products', [SiteController::class, 'getTovars']);
+
 
     // Настройки Wildberries (только для админов)
     $group->get('/wb/settings', [WildberriesController::class, 'getSettings'])->add(new RoleMiddleware(['admin']));

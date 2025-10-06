@@ -178,7 +178,7 @@ INSERT INTO users (username, password, role) VALUES
               "Id" => "INT AUTO_INCREMENT PRIMARY KEY",
               "mainId" => "`mainId` VARCHAR(100) NULL ",
               "vendorCode" => "`vendorCode` VARCHAR(100) NULL ",
-              "nomType" => "`nomTtype` VARCHAR(20) NULL ",
+              "nomType" => "`nomType` VARCHAR(20) NULL ",
               "url" => "`url` VARCHAR(255) NULL ",
               "specifications" => "`specifications` JSON NULL ",
               "specificationsWB" => "`specificationsWB` JSON NULL ",

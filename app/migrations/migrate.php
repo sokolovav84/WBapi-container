@@ -203,6 +203,18 @@ INSERT INTO users (username, password, role) VALUES
       ],
 
 
+    "suppliers" => [
+        "columns" => [
+            "Id" => "INT AUTO_INCREMENT PRIMARY KEY",
+            "name" => "`name` VARCHAR(15) NULL ",
+            "siteUrl" => "VARCHAR(255)",
+            "siteToken" => "VARCHAR(255)",
+            "wbApiKey" => "ARCHAR(255)",
+            "isActive" => "TINYINT DEFAULT 1",
+            "createdAt" => "DATETIME",
+            "updatedAt" => "DATETIME",
+        ]
+    ],
 
      // ""  => [],
      // ""  => [],

@@ -22,7 +22,8 @@ class AuthController
     public function login(Request $request, Response $response): Response
     {
         $data = $request->getParsedBody();
-        //var_dump($data);
+        //print_r($request->getParsedBody(), true);
+        //var_dump($data);exit;
         // Проверяем обязательные поля
         if (empty($data['username']) || empty($data['password'])) {
             return $this->createErrorResponse($response, 'Username and password are required');

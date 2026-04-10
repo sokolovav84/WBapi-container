@@ -17,8 +17,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./app:/var/www/html
-      - ./.env:/var/www/html/.env
+      - ./:/var/www/html
     expose:
       - "9000"
     networks:
@@ -32,8 +31,7 @@ services:
       context: .
       dockerfile: ./nginx/Dockerfile
     volumes:
-      - ./app:/var/www/html
-      - ./.env:/var/www/html/.env
+      - ./:/var/www/html
     ports:
       - "${APP_EXTERNAL_PORT:-80}:80"
     depends_on:

@@ -5,11 +5,65 @@
       <sourceFolder url="file://$MODULE_DIR$/app/src" isTestSource="false" packagePrefix="Dakword\WBSeller\" />
       <sourceFolder url="file://$MODULE_DIR$/app/tests" isTestSource="true" packagePrefix="Dakword\WBSeller\Tests\" />
       <sourceFolder url="file://$MODULE_DIR$/app/" isTestSource="false" packagePrefix="App\" />
-      <sourceFolder url="file://$MODULE_DIR$/app/Controllers" isTestSource="false" packagePrefix="App\Controllers\" />
-      <sourceFolder url="file://$MODULE_DIR$/app/Middleware" isTestSource="false" packagePrefix="App\Middleware\" />
-      <sourceFolder url="file://$MODULE_DIR$/app/Services" isTestSource="false" packagePrefix="App\Services\" />
       <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" packagePrefix="Dakword\WBSeller\Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/app" isTestSource="false" packagePrefix="App\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/doctrine/instantiator/src/Doctrine/Instantiator" isTestSource="false" packagePrefix="Doctrine\Instantiator\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/doctrine/instantiator/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/fig/http-message-util/src" isTestSource="false" packagePrefix="Fig\Http\Message\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/firebase/php-jwt/src" isTestSource="false" packagePrefix="Firebase\JWT\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/graham-campbell/result-type/src" isTestSource="false" packagePrefix="GrahamCampbell\ResultType\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/graham-campbell/result-type/tests" isTestSource="true" packagePrefix="GrahamCampbell\Tests\ResultType\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/guzzlehttp/guzzle/src" isTestSource="false" packagePrefix="GuzzleHttp\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/guzzlehttp/guzzle/tests" isTestSource="true" packagePrefix="GuzzleHttp\Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/guzzlehttp/promises/src" isTestSource="false" packagePrefix="GuzzleHttp\Promise\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/guzzlehttp/promises/tests" isTestSource="true" packagePrefix="GuzzleHttp\Promise\Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/guzzlehttp/psr7/src" isTestSource="false" packagePrefix="GuzzleHttp\Psr7\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/guzzlehttp/psr7/tests" isTestSource="true" packagePrefix="GuzzleHttp\Tests\Psr7\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/http-interop/http-factory-guzzle/src" isTestSource="false" packagePrefix="Http\Factory\Guzzle\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/laravel/serializable-closure/src" isTestSource="false" packagePrefix="Laravel\SerializableClosure\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/laravel/serializable-closure/tests" isTestSource="true" packagePrefix="Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/myclabs/deep-copy/fixtures" isTestSource="true" packagePrefix="DeepCopy\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/myclabs/deep-copy/src/DeepCopy" isTestSource="false" packagePrefix="DeepCopy\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/myclabs/deep-copy/tests/DeepCopyTest" isTestSource="true" packagePrefix="DeepCopyTest\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/nikic/fast-route/src" isTestSource="false" packagePrefix="FastRoute\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/nikic/fast-route/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/nikic/php-parser/lib/PhpParser" isTestSource="false" packagePrefix="PhpParser\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/nikic/php-parser/test/PhpParser" isTestSource="true" packagePrefix="PhpParser\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/paragonie/constant_time_encoding/src" isTestSource="false" packagePrefix="ParagonIE\ConstantTime\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/paragonie/constant_time_encoding/tests" isTestSource="true" packagePrefix="ParagonIE\ConstantTime\Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/php-amqplib/php-amqplib/PhpAmqpLib" isTestSource="false" packagePrefix="PhpAmqpLib\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/php-amqplib/php-amqplib/tests/Functional" isTestSource="true" packagePrefix="PhpAmqpLib\Tests\Functional\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/php-amqplib/php-amqplib/tests/Unit" isTestSource="true" packagePrefix="PhpAmqpLib\Tests\Unit\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/php-di/invoker/src" isTestSource="false" packagePrefix="Invoker\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/php-di/invoker/tests" isTestSource="true" packagePrefix="Invoker\Test\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/php-di/php-di/src" isTestSource="false" packagePrefix="DI\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/php-di/php-di/tests/IntegrationTest" isTestSource="true" packagePrefix="DI\Test\IntegrationTest\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/php-di/php-di/tests/UnitTest" isTestSource="true" packagePrefix="DI\Test\UnitTest\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/phpoption/phpoption/src/PhpOption" isTestSource="false" packagePrefix="PhpOption\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/phpoption/phpoption/tests/PhpOption/Tests" isTestSource="true" packagePrefix="PhpOption\Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/phpseclib/phpseclib/phpseclib" isTestSource="false" packagePrefix="phpseclib3\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/phpseclib/phpseclib/tests" isTestSource="true" packagePrefix="phpseclib3\Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/psr/container/src" isTestSource="false" packagePrefix="Psr\Container\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/psr/http-client/src" isTestSource="false" packagePrefix="Psr\Http\Client\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/psr/http-factory/src" isTestSource="false" packagePrefix="Psr\Http\Message\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/psr/http-message/src" isTestSource="false" packagePrefix="Psr\Http\Message\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/psr/http-server-handler/src" isTestSource="false" packagePrefix="Psr\Http\Server\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/psr/http-server-middleware/src" isTestSource="false" packagePrefix="Psr\Http\Server\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/psr/log/src" isTestSource="false" packagePrefix="Psr\Log\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/ralouphie/getallheaders/tests" isTestSource="true" packagePrefix="getallheaders\Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/slim/psr7/src" isTestSource="false" packagePrefix="Slim\Psr7\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/slim/psr7/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/slim/psr7/tests" isTestSource="true" packagePrefix="Slim\Tests\Psr7\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/slim/slim/Slim" isTestSource="false" packagePrefix="Slim\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/slim/slim/tests" isTestSource="true" packagePrefix="Slim\Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/symfony/polyfill-ctype/" isTestSource="false" packagePrefix="Symfony\Polyfill\Ctype\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/symfony/polyfill-mbstring/" isTestSource="false" packagePrefix="Symfony\Polyfill\Mbstring\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/symfony/polyfill-php80/" isTestSource="false" packagePrefix="Symfony\Polyfill\Php80\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/vlucas/phpdotenv/src" isTestSource="false" packagePrefix="Dotenv\" />
+      <sourceFolder url="file://$MODULE_DIR$/app/vendor_bac/vlucas/phpdotenv/tests/Dotenv" isTestSource="true" packagePrefix="Dotenv\Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" packagePrefix="Dakword\WBSeller\" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/composer" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/instantiator" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/fig/http-message-util" />
@@ -70,6 +124,66 @@
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/paragonie/random_compat" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/php-amqplib/php-amqplib" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/phpseclib/phpseclib" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/instantiator" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/fig/http-message-util" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/firebase/php-jwt" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/graham-campbell/result-type" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/guzzle" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/promises" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/psr7" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/http-interop/http-factory-guzzle" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/laravel/serializable-closure" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/myclabs/deep-copy" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/nikic/fast-route" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/nikic/php-parser" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/paragonie/constant_time_encoding" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/paragonie/random_compat" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phar-io/manifest" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phar-io/version" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/php-amqplib/php-amqplib" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/php-di/invoker" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/php-di/php-di" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpoption/phpoption" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpseclib/phpseclib" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-code-coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-file-iterator" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-invoker" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-text-template" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-timer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/phpunit" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/container" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-client" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-factory" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-message" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-server-handler" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-server-middleware" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/log" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/ralouphie/getallheaders" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/cli-parser" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/code-unit" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/code-unit-reverse-lookup" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/comparator" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/complexity" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/diff" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/environment" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/exporter" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/global-state" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/lines-of-code" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/object-enumerator" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/object-reflector" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/recursion-context" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/resource-operations" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/type" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/version" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/slim/psr7" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/slim/slim" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/deprecation-contracts" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-ctype" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-mbstring" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-php80" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/theseer/tokenizer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/vlucas/phpdotenv" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -20,12 +20,13 @@ error_reporting(E_ALL);
 echo "🚀 Starting database migrations...\n";
 
 
-require_once "../vendor/autoload.php";
+require_once __DIR__ . '/../../vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load();
+//$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+//$dotenv->load();
+Dotenv\Dotenv::createImmutable($_SERVER['DOCUMENT_ROOT'])->safeLoad();
 
-
+//print_r($_SERVER['DOCUMENT_ROOT']);exit;
 
 // Database configuration from environment variables
 $host = 'mysql';
@@ -132,6 +133,7 @@ try {
 
 
   $tabels = [
+ /*
       "wbSettings"  => [
           "columns" => [
               "Id" => "INT AUTO_INCREMENT PRIMARY KEY",
@@ -147,7 +149,7 @@ try {
               "all" => " `Id`,`name`,`proxy`,`warehouse_id` ",
           ]
       ],
-
+*/
 
     "users"  => [
         "columns" => [
@@ -176,6 +178,7 @@ INSERT INTO users (username, password, role) VALUES
       "products"  => [
           "columns" => [
               "Id" => "INT AUTO_INCREMENT PRIMARY KEY",
+              "supplier_id" => "`supplier_id` INT NOT NULL",
               "mainId" => "`mainId` VARCHAR(100) NULL ",
               "vendorCode" => "`vendorCode` VARCHAR(100) NULL ",
               "nomType" => "`nomType` VARCHAR(20) NULL ",
@@ -195,9 +198,10 @@ INSERT INTO users (username, password, role) VALUES
           ],
           "indexes" => [
               "mainId" => " `mainId` ",
-              "specifications" => " `vendorCode`, `mainId`, `nomTtype` ",
+              "specifications" => " `vendorCode`, `mainId`, `nomType` ",
               "original"=>"  `nm_id`",
-              "originalVC"=>"  `vendorCode`"
+              "originalVC"=>"  `vendorCode`",
+                "idx_supplier"=>"  `supplier_id`"
               //"all" => " `all` ",
           ]
       ],
@@ -207,16 +211,37 @@ INSERT INTO users (username, password, role) VALUES
         "columns" => [
             "Id" => "INT AUTO_INCREMENT PRIMARY KEY",
             "name" => "`name` VARCHAR(15) NULL ",
-            "siteUrl" => "VARCHAR(255)",
-            "siteToken" => "VARCHAR(255)",
-            "wbApiKey" => "ARCHAR(255)",
-            "isActive" => "TINYINT DEFAULT 1",
-            "createdAt" => "DATETIME",
-            "updatedAt" => "DATETIME",
+            "siteUrl" => "`siteUrl` VARCHAR(255)",
+            "siteToken" => "`siteToken` VARCHAR(255)",
+            "warehouse_id" =>"`warehouse_id` VARCHAR(15)",
+            "wbApiKey" => "`wbApiKey` TEXT",
+            "isActive" => "`isActive` TINYINT DEFAULT 1",
+            "createdAt" => "`createdAt` DATETIME",
+            "updatedAt" => "`updatedAt` DATETIME",
+            "proxy" => "`proxy` VARCHAR(255) NULL ",
+            "proxy_auth" => "`proxy_auth` VARCHAR(255) NULL",
+        ],
+        "indexes" => [
+            "name" => " `name` ",
+            "isActive" => " `isActive` ",
         ]
     ],
 
-     // ""  => [],
+      "sync_logs" => [
+          "columns" => [
+              "Id" => "INT AUTO_INCREMENT PRIMARY KEY",
+              "supplier_id" => "`supplier_id` INT NOT NULL",
+              "status" => "`status` VARCHAR(25)",
+              "message" => "`message` TEXT NULL ",
+              "createdAt" => "`createdAt` DATETIME",
+          ],
+          "indexes" => [
+              "supplier_id" => " `supplier_id` ",
+             // "message" => " `message` ",
+          ]
+      ],
+
+      // ""  => [],
      // ""  => [],
   ];
 
